@@ -1,2 +1,5 @@
 *.osm.pbf
 *.pyc
+*.json
+.pytest_cache
+__pycache__
