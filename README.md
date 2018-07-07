@@ -15,6 +15,7 @@ The main goal is to create a cost effective alternative to the Google Geolocatio
 
 ## Commands
     ./geoflaskenv/bin/python main.py
+    ./geoflaskenv/bin/pytest
 
 ## OSM Source Files
 * https://download.geofabrik.de/europe/switzerland.html
