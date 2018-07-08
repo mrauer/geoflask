@@ -4,11 +4,12 @@ import os
 from osmread import parse_file
 
 
-def process_osm_file(osm_file_path):
+def process_osm_file(osm_file_path, limit):
     """Process OSM file, converting to a list of dict.
 
     Keyword arguments:
     osm_file_path          --  str path of the OSM file
+    limit                  --  number of records to store
 
     Returns:
     entities_list          --  list of dict
@@ -16,22 +17,47 @@ def process_osm_file(osm_file_path):
     entities_list = list()
     osm_file = parse_file(osm_file_path)
     for entity in osm_file:
-        if(len(entity.tags) > 0 and 'addr:city' in entity.tags
-           and 'addr:street' in entity.tags):
-            entities = dict()
+        if len(entity.tags) > 0 and entity.lat and entity.lon:
             loc = ','.join([str(entity.lat), str(entity.lon)])
-            text = ' '.join([entity.tags['addr:street'],
-                             entity.tags['addr:city']])
+
+            entities = dict()
+
+            response = list()
+            indexable = set()
+
+            if 'name' in entity.tags:
+                response.append(entity.tags['name'])
+
+            if 'addr:housenumber' in entity.tags:
+                response.append(entity.tags['addr:housenumber'])
+
+            if 'addr:street' in entity.tags:
+                response.append(entity.tags['addr:street'])
+
+            if 'addr:city' in entity.tags:
+                response.append(entity.tags['addr:city'])
+
+            if 'postal_code' in entity.tags:
+                response.append(entity.tags['postal_code'])
+
+            if len(response) == 0:
+                continue
+            response = ','.join(response)
+            for key, value in entity.tags.iteritems():
+                indexable.add(value)
+            indexable = ' '.join(indexable)
 
             entities['id'] = len(entities_list) + 1
             entities['fields'] = {}
-            entities['fields']['text'] = text
+            entities['fields']['response'] = response
+            entities['fields']['indexable'] = indexable
             entities['fields']['location_field'] = loc
 
             print entities
             entities_list.append(entities)
-        if len(entities_list) == 50000:
+        if len(entities_list) == limit:
             break
+    print len(entities_list)
     return entities_list
 
 
