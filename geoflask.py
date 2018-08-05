@@ -16,45 +16,51 @@ def process_osm_file(osm_file_path, limit):
     """
     entities_list = list()
     osm_file = parse_file(osm_file_path)
-    for entity in osm_file:
-        if len(entity.tags) > 0 and entity.lat and entity.lon:
-            loc = ','.join([str(entity.lat), str(entity.lon)])
+    for i, entity in enumerate(osm_file):
+        print '|'.join([str(i), str(len(entities_list))])
+        try:
+            if len(entity.tags) > 0 and entity.lat and entity.lon:
+                loc = ','.join([str(entity.lat), str(entity.lon)])
 
-            entities = dict()
+                entities = dict()
 
-            response = list()
-            indexable = set()
+                response = list()
+                indexable = set()
 
-            if 'name' in entity.tags:
-                response.append(entity.tags['name'])
+                if 'name' in entity.tags:
+                    response.append(entity.tags['name'])
 
-            if 'addr:housenumber' in entity.tags:
-                response.append(entity.tags['addr:housenumber'])
+                if 'addr:housenumber' in entity.tags:
+                    response.append(entity.tags['addr:housenumber'])
 
-            if 'addr:street' in entity.tags:
-                response.append(entity.tags['addr:street'])
+                if 'addr:street' in entity.tags:
+                    response.append(entity.tags['addr:street'])
 
-            if 'addr:city' in entity.tags:
-                response.append(entity.tags['addr:city'])
+                if 'addr:city' in entity.tags:
+                    response.append(entity.tags['addr:city'])
 
-            if 'postal_code' in entity.tags:
-                response.append(entity.tags['postal_code'])
+                if 'postal_code' in entity.tags:
+                    response.append(entity.tags['postal_code'])
 
-            if len(response) == 0:
-                continue
-            response = ','.join(response)
-            for key, value in entity.tags.iteritems():
-                indexable.add(value)
-            indexable = ' '.join(indexable)
+                if len(response) == 0:
+                    continue
+                response = ','.join(response)
+                for key, value in entity.tags.iteritems():
+                    indexable.add(value)
+                indexable = ' '.join(indexable)
 
-            entities['id'] = len(entities_list) + 1
-            entities['fields'] = {}
-            entities['fields']['response'] = response
-            entities['fields']['indexable'] = indexable
-            entities['fields']['location_field'] = loc
+                entities['id'] = len(entities_list) + 1
+                entities['fields'] = {}
+                entities['fields']['response'] = response
+                entities['fields']['indexable'] = indexable
+                entities['fields']['location_field'] = loc
+                entities['type'] = 'add'
 
-            print entities
-            entities_list.append(entities)
+                print entities
+                entities_list.append(entities)
+        except Exception, e:
+            print e
+            pass
         if len(entities_list) == limit:
             break
     print len(entities_list)
