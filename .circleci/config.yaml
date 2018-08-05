@@ -17,12 +17,12 @@ jobs:
           name: install dependencies
           command: |
             python -m virtualenv env
-            .env/bin/activate
+            ./env/bin/activate
             pip install -r requirements.txt
       - run:
           name: flake8
           command: |
-            . env/bin/activate
+            ./env/bin/activate
             flake8 main.py
             flake8 test_geoflask.py
             flake8 geoflask.py
@@ -33,7 +33,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            .env/bin/activate
+            ./env/bin/activate
             pytest
 
       - store_artifacts:
